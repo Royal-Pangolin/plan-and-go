@@ -1,4 +1,4 @@
-# Plan&Go
+# :partly_sunny: Plan&Go :beach_umbrella:
 
 - [:clipboard: Project Summary](#clipboard-project-summary)
 - [:wrench: Installation](#wrench-installation)
@@ -42,8 +42,6 @@ git clone https://github.com/Royal-Pangolin/plan-and-go.git
 cd plan-and-go
 ```
 
----
-
 ### :two: Setup and install dependencies
 
 Create a virtual environment in the project root:
@@ -83,8 +81,6 @@ Run database migrations:
 ```bash
 python manage.py migrate
 ```
-
----
 
 ### :four: Run the development server
 
