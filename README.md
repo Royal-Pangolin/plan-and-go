@@ -12,7 +12,7 @@
 
 - Jiménez Flores, Alonso
 - Nejeoui Chafiqui, Mariam
-- Sánchez Díaz, Ana
+- Díaz Sánchez, Ana Valme
 - Sánchez Troncoso, Pablo
 
 ---
