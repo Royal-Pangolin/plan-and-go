@@ -11,8 +11,8 @@
 ### :busts_in_silhouette: Authors
 
 - Jiménez Flores, Alonso
-- Nejoui Chafiqui, Mariam
-- Sánchez Díaz, Ana
+- Nejeoui Chafiqui, Mariam
+- Díaz Sánchez, Ana Valme
 - Sánchez Troncoso, Pablo
 
 ---
