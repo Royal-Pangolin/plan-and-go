@@ -1,0 +1,18 @@
+{% extends "plan_and_go/base.html" %}
+
+{% block title %}Entrar | Plan&Go{% endblock %}
+
+{% block content %}
+<section class="auth-layout">
+  <div>
+    <h1>Entrar</h1>
+    <p class="muted">Abre tus viajes, revisa etapas y actualiza gastos compartidos.</p>
+  </div>
+  <form method="post" class="form-panel">
+    {% csrf_token %}
+    {% include "plan_and_go/includes/form_fields.html" %}
+    <button class="button full" type="submit">Entrar</button>
+    <p class="form-foot">¿No tienes cuenta? <a href="{% url 'plan_and_go:register' %}">Crear cuenta</a></p>
+  </form>
+</section>
+{% endblock %}

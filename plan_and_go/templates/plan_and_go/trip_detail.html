@@ -1,0 +1,158 @@
+{% extends "plan_and_go/base.html" %}
+
+{% block title %}{{ trip.name }} | Plan&Go{% endblock %}
+
+{% block content %}
+<section class="page-head sheet-head">
+  <div>
+    <h1>{{ trip.name }}</h1>
+    <p class="muted">{{ trip.start_date|date:"d/m/Y" }} - {{ trip.end_date|date:"d/m/Y" }} · {{ trip.duration_days }} días</p>
+  </div>
+  <div class="actions head-actions">
+    <a class="button" href="{% url 'plan_and_go:stop_create' trip.pk %}">Nueva etapa</a>
+    {% if can_manage_trip %}
+      <a class="button secondary" href="{% url 'plan_and_go:trip_update' trip.pk %}">Editar</a>
+    {% endif %}
+  </div>
+</section>
+
+{% if trip.description %}
+  <section class="text-band">
+    <p>{{ trip.description }}</p>
+  </section>
+{% endif %}
+
+<section class="context-strip">
+  <div>
+    <span>Participantes</span>
+    <strong>{{ trip.travelers.count }}</strong>
+  </div>
+  <div>
+    <span>Etapas</span>
+    <strong>{{ stops|length }}</strong>
+  </div>
+  <div>
+    <span>Total anotado</span>
+    <strong>{{ summary.total|floatformat:2 }} EUR</strong>
+  </div>
+</section>
+
+<section class="workspace two-columns trip-workspace">
+  <div class="main-column">
+    <div class="section-title ruled-title">
+      <h2>Itinerario</h2>
+      <span>{{ stops|length }} etapas</span>
+    </div>
+    {% if stops %}
+      <div class="timeline">
+        {% for stop in stops %}
+          <article class="timeline-item">
+            <span class="timeline-marker">{{ stop.order }}</span>
+            <div>
+              <a class="row-title" href="{{ stop.get_absolute_url }}">{{ stop.name }}</a>
+              <p class="row-meta">{{ stop.start_date|date:"d/m/Y" }} - {{ stop.end_date|date:"d/m/Y" }} · {{ stop.latitude }}, {{ stop.longitude }}</p>
+              {% if stop.description %}
+                <p>{{ stop.description }}</p>
+              {% endif %}
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state compact">
+        <h2>Sin etapas</h2>
+        <p>Añade la primera parada del viaje.</p>
+      </div>
+    {% endif %}
+
+    <div class="section-title spaced ruled-title">
+      <h2>Últimos gastos</h2>
+    </div>
+    {% if expenses %}
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Descripción</th>
+              <th>Etapa</th>
+              <th>Pagador</th>
+              <th class="number">Importe</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for expense in expenses %}
+              <tr>
+                <td>{{ expense.description }}</td>
+                <td>{{ expense.stop.name }}</td>
+                <td>{{ expense.paid_by.username }}</td>
+                <td class="number">{{ expense.amount|floatformat:2 }} EUR</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p class="muted">Aún no hay gastos registrados.</p>
+    {% endif %}
+  </div>
+
+  <aside class="side-column pinned">
+    <section class="panel finance-panel">
+      <h2>Resumen financiero</h2>
+      <div class="metric-stack">
+        <div>
+          <span>Total</span>
+          <strong>{{ summary.total|floatformat:2 }} EUR</strong>
+        </div>
+        <div>
+          <span>Por persona</span>
+          <strong>{{ summary.per_person|floatformat:2 }} EUR</strong>
+        </div>
+      </div>
+      {% if summary.rows %}
+        <div class="balance-list">
+          {% for row in summary.rows %}
+            <div class="balance-row">
+              <span>{{ row.user.username }}</span>
+              <strong class="{% if row.balance > 0 %}positive{% elif row.balance < 0 %}negative{% endif %}">
+                {{ row.balance|floatformat:2 }} EUR
+              </strong>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+      <h3>Liquidación</h3>
+      {% if summary.settlements %}
+        <ul class="plain-list">
+          {% for settlement in summary.settlements %}
+            <li>{{ settlement.payer.username }} paga {{ settlement.amount|floatformat:2 }} EUR a {{ settlement.receiver.username }}</li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="muted">No hay deudas pendientes.</p>
+      {% endif %}
+    </section>
+
+    <section class="panel">
+      <h2>Participantes</h2>
+      <ul class="plain-list">
+        {% for traveler in trip.travelers.all %}
+          <li>{{ traveler.username }}{% if traveler == trip.created_by %} · creador{% endif %}</li>
+        {% endfor %}
+      </ul>
+      {% if invite_form %}
+        <form method="post" action="{% url 'plan_and_go:invite_traveler' trip.pk %}" class="stack-form">
+          {% csrf_token %}
+          <label for="{{ invite_form.identifier.id_for_label }}">Invitar usuario</label>
+          {{ invite_form.identifier }}
+          <button class="button full" type="submit">Invitar</button>
+        </form>
+      {% endif %}
+    </section>
+
+    {% if can_manage_trip %}
+      <a class="button danger full" href="{% url 'plan_and_go:trip_delete' trip.pk %}">Eliminar viaje</a>
+    {% endif %}
+  </aside>
+</section>
+{% endblock %}

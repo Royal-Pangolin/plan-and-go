@@ -1,0 +1,15 @@
+{% extends "plan_and_go/base.html" %}
+
+{% block title %}{{ title }} | Plan&Go{% endblock %}
+
+{% block content %}
+<section class="confirm-layout">
+  <h1>{{ title }}</h1>
+  <p>Vas a eliminar <strong>{{ object_name }}</strong>. Esta acción no se puede deshacer.</p>
+  <form method="post" class="actions">
+    {% csrf_token %}
+    <button class="button danger" type="submit">Eliminar</button>
+    <a class="button secondary" href="{{ cancel_url }}">Cancelar</a>
+  </form>
+</section>
+{% endblock %}

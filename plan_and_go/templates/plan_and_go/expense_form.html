@@ -1,0 +1,21 @@
+{% extends "plan_and_go/base.html" %}
+
+{% block title %}{{ title }} | Plan&Go{% endblock %}
+
+{% block content %}
+<section class="form-layout">
+  <div>
+    <p class="eyebrow">{{ stop.name }}</p>
+    <h1>{{ title }}</h1>
+    <p class="muted">El importe se repartira entre todos los participantes del viaje.</p>
+  </div>
+  <form method="post" class="form-panel">
+    {% csrf_token %}
+    {% include "plan_and_go/includes/form_fields.html" %}
+    <div class="actions">
+      <button class="button" type="submit">{{ submit_label }}</button>
+      <a class="button secondary" href="{{ stop.get_absolute_url }}">Cancelar</a>
+    </div>
+  </form>
+</section>
+{% endblock %}

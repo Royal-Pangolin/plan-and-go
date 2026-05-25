@@ -1,0 +1,18 @@
+{% extends "plan_and_go/base.html" %}
+
+{% block title %}Plan&Go | Viajes compartidos{% endblock %}
+{% block header %}{% endblock %}
+{% block main_class %}landing-main{% endblock %}
+
+{% block content %}
+<section class="landing-simple">
+  <div class="landing-copy">
+    <h1>Plan&Go</h1>
+    <p class="lead">Planifica viajes en grupo, organiza etapas y reparte gastos desde un único lugar.</p>
+    <div class="actions landing-actions">
+      <a class="button" href="{% url 'login' %}">Iniciar sesión</a>
+      <a class="button secondary" href="{% url 'plan_and_go:register' %}">Crear cuenta</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

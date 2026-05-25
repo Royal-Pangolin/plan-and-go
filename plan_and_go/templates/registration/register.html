@@ -1,0 +1,18 @@
+{% extends "plan_and_go/base.html" %}
+
+{% block title %}Registro | Plan&Go{% endblock %}
+
+{% block content %}
+<section class="auth-layout">
+  <div>
+    <h1>Registro</h1>
+    <p class="muted">Crea tu perfil para participar en viajes, pagar gastos e invitar a otros usuarios.</p>
+  </div>
+  <form method="post" class="form-panel">
+    {% csrf_token %}
+    {% include "plan_and_go/includes/form_fields.html" %}
+    <button class="button full" type="submit">Crear cuenta</button>
+    <p class="form-foot">¿Ya tienes cuenta? <a href="{% url 'login' %}">Entrar</a></p>
+  </form>
+</section>
+{% endblock %}

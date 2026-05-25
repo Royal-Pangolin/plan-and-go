@@ -1,0 +1,230 @@
+[
+{
+  "model": "auth.user",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$PlCF6nMqyulcUmgRgYzay8$MzDdo9+feNPckdc74ssnn46apeE9fPlg85yaK9AgpRE=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "alonso",
+    "first_name": "",
+    "last_name": "",
+    "email": "alonso@example.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-05-24T17:45:51.538Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 2,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$yTjbZi7WtLIweHfn1aQhh5$+KeqtdKrWz9oAmmH/I+q0dfqrr9EY7/h8SeFkhx8eXI=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "mariam",
+    "first_name": "",
+    "last_name": "",
+    "email": "mariam@example.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-05-24T17:45:51.716Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 3,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$hi3eduKihgAa4zjKkNAGfO$W0qzDL1G9zQdsxGmdF9AyG5DSw/RhrBukvbIrjYA9ZA=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "ana",
+    "first_name": "",
+    "last_name": "",
+    "email": "ana@example.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-05-24T17:45:51.876Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 4,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$c1L5b5pl30rNNtCjqdoJKP$oBjkAyKktR6vRnrYNR1gMIsJTJxNZFK1J/m5xh7IJ84=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "pablo",
+    "first_name": "",
+    "last_name": "",
+    "email": "pablo@example.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-05-24T17:45:52.037Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plan_and_go.trip",
+  "pk": 1,
+  "fields": {
+    "name": "Andalucía en ruta",
+    "description": "Ruta de grupo con paradas urbanas, previsiones meteorológicas y gastos compartidos.",
+    "start_date": "2026-06-10",
+    "end_date": "2026-06-16",
+    "created_by": 1,
+    "created_at": "2026-05-24T17:45:52.198Z"
+  }
+},
+{
+  "model": "plan_and_go.traveler",
+  "pk": 1,
+  "fields": {
+    "trip": 1,
+    "user": 1,
+    "joined_at": "2026-05-24T17:45:52.199Z"
+  }
+},
+{
+  "model": "plan_and_go.traveler",
+  "pk": 2,
+  "fields": {
+    "trip": 1,
+    "user": 2,
+    "joined_at": "2026-05-24T17:45:52.200Z"
+  }
+},
+{
+  "model": "plan_and_go.traveler",
+  "pk": 3,
+  "fields": {
+    "trip": 1,
+    "user": 3,
+    "joined_at": "2026-05-24T17:45:52.200Z"
+  }
+},
+{
+  "model": "plan_and_go.traveler",
+  "pk": 4,
+  "fields": {
+    "trip": 1,
+    "user": 4,
+    "joined_at": "2026-05-24T17:45:52.201Z"
+  }
+},
+{
+  "model": "plan_and_go.stop",
+  "pk": 1,
+  "fields": {
+    "trip": 1,
+    "name": "Sevilla",
+    "description": "Llegada, alojamiento y primera cena del grupo.",
+    "latitude": "37.389092",
+    "longitude": "-5.984459",
+    "start_date": "2026-06-10",
+    "end_date": "2026-06-11",
+    "order": 1,
+    "notes": "Revisar temperatura antes de reservar actividades exteriores.",
+    "created_at": "2026-05-24T17:45:52.202Z"
+  }
+},
+{
+  "model": "plan_and_go.stop",
+  "pk": 2,
+  "fields": {
+    "trip": 1,
+    "name": "Granada",
+    "description": "Visita cultural y desplazamientos internos.",
+    "latitude": "37.177336",
+    "longitude": "-3.598557",
+    "start_date": "2026-06-12",
+    "end_date": "2026-06-14",
+    "order": 2,
+    "notes": "Mantener margen para cambios si hay lluvia.",
+    "created_at": "2026-05-24T17:45:52.204Z"
+  }
+},
+{
+  "model": "plan_and_go.stop",
+  "pk": 3,
+  "fields": {
+    "trip": 1,
+    "name": "Málaga",
+    "description": "Cierre del viaje y liquidación final.",
+    "latitude": "36.721302",
+    "longitude": "-4.421637",
+    "start_date": "2026-06-15",
+    "end_date": "2026-06-16",
+    "order": 3,
+    "notes": "Comprobar balances antes de volver.",
+    "created_at": "2026-05-24T17:45:52.205Z"
+  }
+},
+{
+  "model": "plan_and_go.expense",
+  "pk": 1,
+  "fields": {
+    "stop": 1,
+    "paid_by": 1,
+    "description": "Apartamento Sevilla",
+    "amount": "320.00",
+    "date": "2026-06-10",
+    "created_at": "2026-05-24T17:45:52.207Z"
+  }
+},
+{
+  "model": "plan_and_go.expense",
+  "pk": 2,
+  "fields": {
+    "stop": 1,
+    "paid_by": 2,
+    "description": "Cena bienvenida",
+    "amount": "96.40",
+    "date": "2026-06-10",
+    "created_at": "2026-05-24T17:45:52.208Z"
+  }
+},
+{
+  "model": "plan_and_go.expense",
+  "pk": 3,
+  "fields": {
+    "stop": 2,
+    "paid_by": 3,
+    "description": "Entradas visita",
+    "amount": "72.00",
+    "date": "2026-06-12",
+    "created_at": "2026-05-24T17:45:52.210Z"
+  }
+},
+{
+  "model": "plan_and_go.expense",
+  "pk": 4,
+  "fields": {
+    "stop": 2,
+    "paid_by": 4,
+    "description": "Transporte urbano",
+    "amount": "38.80",
+    "date": "2026-06-13",
+    "created_at": "2026-05-24T17:45:52.211Z"
+  }
+},
+{
+  "model": "plan_and_go.expense",
+  "pk": 5,
+  "fields": {
+    "stop": 3,
+    "paid_by": 1,
+    "description": "Comida final",
+    "amount": "118.20",
+    "date": "2026-06-16",
+    "created_at": "2026-05-24T17:45:52.212Z"
+  }
+}
+]

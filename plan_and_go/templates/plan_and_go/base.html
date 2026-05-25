@@ -1,0 +1,42 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Plan&Go{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'plan_and_go/css/styles.css' %}">
+</head>
+<body>
+  {% block header %}
+    <header class="topbar">
+      <a class="brand" href="{% url 'plan_and_go:home' %}">Plan&Go</a>
+      <nav class="nav">
+        {% if user.is_authenticated %}
+          <a href="{% url 'plan_and_go:trip_list' %}">Mis viajes</a>
+          <a class="button small" href="{% url 'plan_and_go:trip_create' %}">Nuevo viaje</a>
+          <form action="{% url 'logout' %}" method="post" class="inline-form">
+            {% csrf_token %}
+            <button type="submit" class="link-button">Salir</button>
+          </form>
+        {% else %}
+          <a href="{% url 'login' %}">Iniciar sesión</a>
+          <a class="button small" href="{% url 'plan_and_go:register' %}">Crear cuenta</a>
+        {% endif %}
+      </nav>
+    </header>
+  {% endblock %}
+
+  {% if messages %}
+    <div class="messages" aria-live="polite">
+      {% for message in messages %}
+        <p class="message {{ message.tags }}">{{ message }}</p>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <main class="{% block main_class %}{% endblock %}">
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

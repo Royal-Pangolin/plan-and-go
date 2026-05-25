@@ -1,0 +1,39 @@
+{% extends "plan_and_go/base.html" %}
+
+{% block title %}Mis viajes | Plan&Go{% endblock %}
+
+{% block content %}
+<section class="page-head sheet-head trip-list-head">
+  <div>
+    <p class="welcome-text">Hola, {% firstof user.first_name user.username %}</p>
+    <h1>Mis viajes</h1>
+    <p class="muted">Rutas donde participas actualmente.</p>
+  </div>
+  <div class="head-actions">
+    <a class="button" href="{% url 'plan_and_go:trip_create' %}">Nuevo viaje</a>
+  </div>
+</section>
+
+{% if trips %}
+  <section class="list-grid sheet-section">
+    {% for trip in trips %}
+      <article class="trip-row">
+        <a href="{{ trip.get_absolute_url }}">
+          <span class="row-title">{{ trip.name }}</span>
+          <span class="row-meta">{{ trip.start_date|date:"d/m/Y" }} - {{ trip.end_date|date:"d/m/Y" }}</span>
+        </a>
+        <div class="row-stats">
+          <span>{{ trip.travelers.count }} participantes</span>
+          <span>{{ trip.stops_count }} etapas</span>
+        </div>
+      </article>
+    {% endfor %}
+  </section>
+{% else %}
+  <section class="empty-state">
+    <h2>No tienes viajes todavía</h2>
+    <p>Crea el primero para empezar a registrar etapas, participantes y gastos.</p>
+    <a class="button" href="{% url 'plan_and_go:trip_create' %}">Crear viaje</a>
+  </section>
+{% endif %}
+{% endblock %}

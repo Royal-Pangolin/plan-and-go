@@ -1,0 +1,20 @@
+{% extends "plan_and_go/base.html" %}
+
+{% block title %}{{ title }} | Plan&Go{% endblock %}
+
+{% block content %}
+<section class="form-layout">
+  <div>
+    <h1>{{ title }}</h1>
+    <p class="muted">Define el marco general antes de añadir etapas y gastos.</p>
+  </div>
+  <form method="post" class="form-panel">
+    {% csrf_token %}
+    {% include "plan_and_go/includes/form_fields.html" %}
+    <div class="actions">
+      <button class="button" type="submit">{{ submit_label }}</button>
+      <a class="button secondary" href="{% if trip %}{{ trip.get_absolute_url }}{% else %}{% url 'plan_and_go:trip_list' %}{% endif %}">Cancelar</a>
+    </div>
+  </form>
+</section>
+{% endblock %}

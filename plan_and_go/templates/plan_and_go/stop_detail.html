@@ -1,0 +1,110 @@
+{% extends "plan_and_go/base.html" %}
+
+{% block title %}{{ stop.name }} | Plan&Go{% endblock %}
+
+{% block content %}
+<section class="page-head sheet-head">
+  <div>
+    <p class="eyebrow"><a href="{{ trip.get_absolute_url }}">{{ trip.name }}</a></p>
+    <h1>{{ stop.name }}</h1>
+    <p class="muted">{{ stop.start_date|date:"d/m/Y" }} - {{ stop.end_date|date:"d/m/Y" }} · {{ stop.latitude }}, {{ stop.longitude }}</p>
+  </div>
+  <div class="actions head-actions">
+    <a class="button" href="{% url 'plan_and_go:expense_create' trip.pk stop.pk %}">Nuevo gasto</a>
+    <a class="button secondary" href="{% url 'plan_and_go:stop_update' trip.pk stop.pk %}">Editar</a>
+  </div>
+</section>
+
+{% if stop.description or stop.notes %}
+  <section class="text-band">
+    {% if stop.description %}<p>{{ stop.description }}</p>{% endif %}
+    {% if stop.notes %}<p>{{ stop.notes }}</p>{% endif %}
+  </section>
+{% endif %}
+
+<section class="context-strip">
+  <div>
+    <span>Coordenadas</span>
+    <strong>{{ stop.latitude }}, {{ stop.longitude }}</strong>
+  </div>
+  <div>
+    <span>Gastos</span>
+    <strong>{{ expenses|length }}</strong>
+  </div>
+  <div>
+    <span>Previsión</span>
+    <strong>{% if weather %}activa{% else %}sin datos{% endif %}</strong>
+  </div>
+</section>
+
+<section class="workspace two-columns">
+  <div class="main-column">
+    <div class="section-title ruled-title">
+      <h2>Gastos de la etapa</h2>
+      <a href="{% url 'plan_and_go:expense_create' trip.pk stop.pk %}">Registrar gasto</a>
+    </div>
+    {% if expenses %}
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Descripción</th>
+              <th>Fecha</th>
+              <th>Pagador</th>
+              <th class="number">Importe</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for expense in expenses %}
+              <tr>
+                <td>{{ expense.description }}</td>
+                <td>{{ expense.date|date:"d/m/Y" }}</td>
+                <td>{{ expense.paid_by.username }}</td>
+                <td class="number">{{ expense.amount|floatformat:2 }} EUR</td>
+                <td class="table-actions">
+                  <a href="{% url 'plan_and_go:expense_update' trip.pk stop.pk expense.pk %}">Editar</a>
+                  <a href="{% url 'plan_and_go:expense_delete' trip.pk stop.pk expense.pk %}">Eliminar</a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="empty-state compact">
+        <h2>Sin gastos</h2>
+        <p>Registra pagos de alojamiento, comida o transporte para calcular balances.</p>
+      </div>
+    {% endif %}
+  </div>
+
+  <aside class="side-column pinned">
+    <section class="panel">
+      <h2>Previsión</h2>
+      {% if weather %}
+        <p class="muted">Zona horaria: {{ weather.timezone|default:"auto" }}</p>
+        <div class="weather-list">
+          {% for day in weather.days %}
+            <div class="weather-row">
+              <span>{{ day.date }}</span>
+              <strong>{{ day.label }}</strong>
+              <small>{{ day.temperature_min }} / {{ day.temperature_max }} C · {{ day.precipitation }} mm</small>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="muted">La previsión meteorológica no está disponible ahora mismo.</p>
+      {% endif %}
+    </section>
+
+    <section class="panel">
+      <h2>Acciones</h2>
+      <div class="vertical-actions">
+        <a class="button secondary full" href="{% url 'plan_and_go:stop_update' trip.pk stop.pk %}">Editar etapa</a>
+        <a class="button danger full" href="{% url 'plan_and_go:stop_delete' trip.pk stop.pk %}">Eliminar etapa</a>
+      </div>
+    </section>
+  </aside>
+</section>
+{% endblock %}
