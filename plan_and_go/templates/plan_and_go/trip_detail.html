@@ -135,13 +135,21 @@
 
     <section class="panel">
       <h2>Participantes</h2>
-      <ul class="plain-list">
+      <ul class="traveler-list">
         {% for traveler in trip.travelers.all %}
-          <li>{{ traveler.username }}{% if traveler == trip.created_by %} · creador{% endif %}</li>
+          <li>
+            <span>{{ traveler.username }}{% if traveler == trip.created_by %} · creador{% endif %}</span>
+            {% if can_manage_trip and traveler != trip.created_by %}
+              <form method="post" action="{% url 'plan_and_go:remove_traveler' trip.pk traveler.pk %}">
+                {% csrf_token %}
+                <button class="icon-button danger" type="submit" aria-label="Eliminar a {{ traveler.username }}">-</button>
+              </form>
+            {% endif %}
+          </li>
         {% endfor %}
       </ul>
       {% if invite_form %}
-        <form method="post" action="{% url 'plan_and_go:invite_traveler' trip.pk %}" class="stack-form">
+        <form method="post" action="{% url 'plan_and_go:invite_traveler' trip.pk %}" class="stack-form invite-form">
           {% csrf_token %}
           <label for="{{ invite_form.identifier.id_for_label }}">Invitar usuario</label>
           {{ invite_form.identifier }}

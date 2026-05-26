@@ -13,6 +13,11 @@ urlpatterns = [
     path("viajes/<int:pk>/editar/", views.trip_update, name="trip_update"),
     path("viajes/<int:pk>/eliminar/", views.trip_delete, name="trip_delete"),
     path("viajes/<int:pk>/invitar/", views.invite_traveler, name="invite_traveler"),
+    path(
+        "viajes/<int:trip_pk>/participantes/<int:user_pk>/eliminar/",
+        views.remove_traveler,
+        name="remove_traveler",
+    ),
     path("viajes/<int:trip_pk>/etapas/nueva/", views.stop_create, name="stop_create"),
     path("viajes/<int:trip_pk>/etapas/<int:pk>/", views.stop_detail, name="stop_detail"),
     path("viajes/<int:trip_pk>/etapas/<int:pk>/editar/", views.stop_update, name="stop_update"),

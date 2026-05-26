@@ -6,6 +6,7 @@ import requests
 from django.contrib.auth.models import User
 from django.core import mail
 from django.core.exceptions import ValidationError
+from django.core.management import call_command
 from django.db import IntegrityError
 from django.test import TestCase, override_settings
 from django.urls import reverse
@@ -179,6 +180,46 @@ class ViewPermissionTests(PlanAndGoTestCase):
         self.assertTrue(Traveler.objects.filter(trip=self.trip, user=invited).exists())
         self.assertEqual(len(mail.outbox), 1)
         self.assertIn(self.trip.name, mail.outbox[0].subject)
+        self.assertIn("http://testserver", mail.outbox[0].body)
+
+    def test_creator_can_remove_participant(self):
+        self.client.force_login(self.alonso)
+
+        response = self.client.post(
+            reverse(
+                "plan_and_go:remove_traveler",
+                kwargs={"trip_pk": self.trip.pk, "user_pk": self.mariam.pk},
+            )
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(Traveler.objects.filter(trip=self.trip, user=self.mariam).exists())
+
+    def test_creator_cannot_remove_trip_creator(self):
+        self.client.force_login(self.alonso)
+
+        response = self.client.post(
+            reverse(
+                "plan_and_go:remove_traveler",
+                kwargs={"trip_pk": self.trip.pk, "user_pk": self.alonso.pk},
+            )
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(Traveler.objects.filter(trip=self.trip, user=self.alonso).exists())
+
+    def test_non_creator_cannot_remove_participant(self):
+        self.client.force_login(self.mariam)
+
+        response = self.client.post(
+            reverse(
+                "plan_and_go:remove_traveler",
+                kwargs={"trip_pk": self.trip.pk, "user_pk": self.alonso.pk},
+            )
+        )
+
+        self.assertEqual(response.status_code, 403)
+        self.assertTrue(Traveler.objects.filter(trip=self.trip, user=self.alonso).exists())
 
 
 class DateFormTests(PlanAndGoTestCase):
@@ -207,6 +248,24 @@ class DateFormTests(PlanAndGoTestCase):
 
         self.assertTrue(form.is_valid(), form.errors)
         self.assertEqual(form.cleaned_data["start_date"], date(2026, 6, 3))
+
+
+class RegistrationFormTests(PlanAndGoTestCase):
+    def test_register_page_hides_password_help_text(self):
+        response = self.client.get(reverse("plan_and_go:register"))
+
+        self.assertNotContains(response, "Su contraseña no puede asemejarse")
+        self.assertNotContains(response, "No puede ser una clave utilizada")
+        self.assertNotContains(response, "Para verificar, introduzca")
+
+
+class EmailCommandTests(PlanAndGoTestCase):
+    @override_settings(EMAIL_BACKEND="django.core.mail.backends.locmem.EmailBackend")
+    def test_send_test_email_command_sends_message(self):
+        call_command("send_test_email", "destino@example.com", verbosity=0)
+
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].to, ["destino@example.com"])
 
 
 class WeatherServiceTests(PlanAndGoTestCase):

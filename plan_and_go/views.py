@@ -2,6 +2,7 @@ from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.core.mail import send_mail
 from django.db import transaction
@@ -145,12 +146,33 @@ def invite_traveler(request, pk):
     if form.is_valid():
         user = form.user
         Traveler.objects.create(trip=trip, user=user)
-        _send_invitation_email(request.user, user, trip)
+        _send_invitation_email(request, request.user, user, trip)
         messages.success(request, f"{user.username} se ha unido al viaje.")
     else:
         for errors in form.errors.values():
             for error in errors:
                 messages.error(request, error)
+    return redirect(trip)
+
+
+@login_required
+def remove_traveler(request, trip_pk, user_pk):
+    trip = _get_creator_trip(request.user, trip_pk)
+    if request.method != "POST":
+        return redirect(trip)
+
+    if user_pk == trip.created_by_id:
+        messages.error(request, "No puedes eliminar al creador del viaje.")
+        return redirect(trip)
+
+    membership = Traveler.objects.filter(trip=trip, user_id=user_pk).select_related("user").first()
+    if membership is None:
+        messages.error(request, "Ese participante no forma parte del viaje.")
+        return redirect(trip)
+
+    username = membership.user.username
+    membership.delete()
+    messages.success(request, f"{username} ya no forma parte del viaje.")
     return redirect(trip)
 
 
@@ -326,10 +348,12 @@ def _is_creator(user: User, trip: Trip):
     return user.is_authenticated and trip.created_by_id == user.id
 
 
-def _send_invitation_email(sender, invited_user, trip):
+def _send_invitation_email(request, sender, invited_user, trip):
     if not invited_user.email:
         return
-    detail_url = reverse("plan_and_go:trip_detail", kwargs={"pk": trip.pk})
+    detail_url = request.build_absolute_uri(
+        reverse("plan_and_go:trip_detail", kwargs={"pk": trip.pk})
+    )
     send_mail(
         subject=f"Te han invitado a {trip.name}",
         message=(
@@ -338,5 +362,5 @@ def _send_invitation_email(sender, invited_user, trip):
         ),
         from_email=None,
         recipient_list=[invited_user.email],
-        fail_silently=True,
+        fail_silently=settings.EMAIL_FAIL_SILENTLY,
     )
