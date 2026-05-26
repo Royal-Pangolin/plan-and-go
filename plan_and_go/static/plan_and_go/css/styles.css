@@ -1,4 +1,5 @@
 :root {
+  color-scheme: light;
   --paper: #f4f0e6;
   --paper-deep: #e8e1d2;
   --sheet: #fbf8ef;
@@ -10,10 +11,53 @@
   --rule-soft: rgba(25, 24, 23, 0.12);
   --wash: rgba(25, 24, 23, 0.055);
   --hover: rgba(25, 24, 23, 0.055);
+  --button-hover: #eee8da;
   --danger: #b42318;
-  --danger-dark: #8f1d14;
+  --danger-hover: #8f1d14;
+  --danger-text: #b42318;
+  --danger-contrast: #fff;
   --positive: #242321;
   --shadow: 0 10px 24px rgba(25, 24, 23, 0.06);
+  --button-shadow: 0 8px 18px rgba(25, 24, 23, 0.08);
+  --focus-ring: rgba(25, 24, 23, 0.1);
+  --page-start: rgba(251, 248, 239, 0.82);
+  --page-end: rgba(244, 240, 230, 0.96);
+  --topbar-start: rgba(251, 248, 239, 0.94);
+  --topbar-end: rgba(244, 240, 230, 0.9);
+  --grid-line: rgba(25, 24, 23, 0.045);
+  --grid-line-soft: rgba(25, 24, 23, 0.038);
+  --success-bg: #f7f4ea;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #151514;
+  --paper-deep: #1d1c1a;
+  --sheet: #24231f;
+  --sheet-soft: #2d2b26;
+  --ink: #f7f1e7;
+  --pencil: #c9c0ad;
+  --pencil-light: #a79d8d;
+  --rule: rgba(247, 241, 231, 0.28);
+  --rule-soft: rgba(247, 241, 231, 0.14);
+  --wash: rgba(247, 241, 231, 0.07);
+  --hover: rgba(247, 241, 231, 0.1);
+  --button-hover: #343128;
+  --danger: #b93a30;
+  --danger-hover: #9f2c24;
+  --danger-text: #ff8b80;
+  --danger-contrast: #fff;
+  --positive: #f0eadc;
+  --shadow: 0 14px 30px rgba(0, 0, 0, 0.32);
+  --button-shadow: 0 10px 22px rgba(0, 0, 0, 0.26);
+  --focus-ring: rgba(247, 241, 231, 0.18);
+  --page-start: rgba(21, 21, 20, 0.96);
+  --page-end: rgba(13, 13, 12, 0.98);
+  --topbar-start: rgba(21, 21, 20, 0.94);
+  --topbar-end: rgba(21, 21, 20, 0.84);
+  --grid-line: rgba(247, 241, 231, 0.055);
+  --grid-line-soft: rgba(247, 241, 231, 0.04);
+  --success-bg: #2f2d25;
 }
 
 * {
@@ -29,12 +73,14 @@ body {
   min-height: 100%;
   overflow-x: hidden;
   background:
-    linear-gradient(180deg, rgba(251, 248, 239, 0.82), rgba(244, 240, 230, 0.96)),
+    linear-gradient(180deg, var(--page-start), var(--page-end)),
     var(--paper);
   color: var(--ink);
+  accent-color: var(--ink);
   font-family: "Trebuchet MS", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
   font-size: 16px;
   line-height: 1.5;
+  transition: background 180ms ease, color 180ms ease;
 }
 
 a {
@@ -46,7 +92,13 @@ a:hover {
   color: var(--ink);
 }
 
-main a:not(.button):not(.brand):not(.row-title) {
+a:focus-visible,
+button:focus-visible {
+  outline: 0;
+  box-shadow: 0 0 0 3px var(--focus-ring);
+}
+
+main a:not(.button):not(.brand):not(.row-title):not(.trip-link) {
   color: var(--ink);
   font-weight: 900;
   text-decoration: underline;
@@ -54,7 +106,7 @@ main a:not(.button):not(.brand):not(.row-title) {
   text-underline-offset: 0.22em;
 }
 
-main a:not(.button):not(.brand):not(.row-title):hover {
+main a:not(.button):not(.brand):not(.row-title):not(.trip-link):hover {
   background: var(--hover);
 }
 
@@ -74,11 +126,58 @@ main {
   min-height: 70px;
   padding: 0 max(20px, calc((100vw - 1180px) / 2));
   background:
-    linear-gradient(180deg, rgba(251, 248, 239, 0.94), rgba(244, 240, 230, 0.9)),
+    linear-gradient(180deg, var(--topbar-start), var(--topbar-end)),
     var(--paper);
   border-bottom: 1px solid var(--rule-soft);
   box-shadow: none;
   backdrop-filter: blur(10px);
+}
+
+.theme-toggle {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 30;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: var(--sheet);
+  color: var(--ink);
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  transition: transform 140ms ease, border-color 140ms ease, background 140ms ease, box-shadow 140ms ease;
+}
+
+.theme-toggle:hover {
+  transform: translateY(-1px);
+  border-color: var(--ink);
+  background: var(--button-hover);
+  box-shadow: var(--button-shadow);
+}
+
+.theme-toggle-icon {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  color: var(--ink);
+  stroke-width: 2.2;
+}
+
+.theme-toggle-moon {
+  display: none;
+}
+
+:root[data-theme="dark"] .theme-toggle-sun {
+  display: none;
+}
+
+:root[data-theme="dark"] .theme-toggle-moon {
+  display: block;
 }
 
 .brand {
@@ -132,7 +231,7 @@ main {
 .link-button:hover {
   color: var(--ink);
   border-color: var(--rule-soft);
-  background: var(--hover);
+  background: var(--button-hover);
 }
 
 .inline-form {
@@ -163,9 +262,9 @@ main {
 
 .button:hover {
   transform: translateY(-1px);
-  box-shadow: 0 8px 18px rgba(25, 24, 23, 0.08);
+  box-shadow: var(--button-shadow);
   color: var(--ink);
-  background: var(--hover);
+  background: var(--button-hover);
 }
 
 .button.secondary {
@@ -177,24 +276,24 @@ main {
 
 .button.secondary:hover {
   color: var(--ink);
-  background: var(--hover);
+  background: var(--button-hover);
 }
 
 .button.danger {
   background: var(--danger);
   border-color: var(--danger);
-  color: #fff;
+  color: var(--danger-contrast);
 }
 
 .button.danger:hover {
-  background: var(--danger-dark);
-  border-color: var(--danger-dark);
-  color: #fff;
+  background: var(--danger-hover);
+  border-color: var(--danger-hover);
+  color: var(--danger-contrast);
 }
 
 .button.ghost {
   background: var(--sheet);
-  color: var(--danger);
+  color: var(--danger-text);
 }
 
 .button.small {
@@ -263,9 +362,9 @@ h3 {
   padding: 32px;
   overflow: hidden;
   background:
-    linear-gradient(90deg, rgba(25, 24, 23, 0.045) 1px, transparent 1px),
-    linear-gradient(0deg, rgba(25, 24, 23, 0.038) 1px, transparent 1px),
-    linear-gradient(180deg, rgba(251, 248, 239, 0.82), rgba(244, 240, 230, 0.96)),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(0deg, var(--grid-line-soft) 1px, transparent 1px),
+    linear-gradient(180deg, var(--page-start), var(--page-end)),
     var(--paper);
   background-size: 44px 44px, 44px 44px, auto, auto;
 }
@@ -413,7 +512,7 @@ small {
 
 .context-strip {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 14px;
   margin: 0 0 34px;
 }
@@ -518,6 +617,10 @@ small {
 .trip-row:hover {
   transform: translateX(3px);
   background: var(--hover);
+}
+
+.trip-link {
+  display: block;
 }
 
 .row-title {
@@ -665,7 +768,7 @@ tr:last-child td {
 }
 
 .negative {
-  color: var(--danger);
+  color: var(--danger-text);
 }
 
 .plain-list {
@@ -685,6 +788,59 @@ tr:last-child td {
 .stack-form {
   display: grid;
   gap: 12px;
+}
+
+.city-search {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.city-search-box {
+  display: block;
+}
+
+.city-search-results {
+  display: grid;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.city-search-result {
+  display: grid;
+  gap: 2px;
+  width: 100%;
+  min-height: 52px;
+  padding: 9px 12px;
+  border: 1px solid var(--rule-soft);
+  border-radius: 8px;
+  background: var(--sheet-soft);
+  color: var(--ink);
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+  transition: border-color 140ms ease, background 140ms ease, transform 140ms ease;
+}
+
+.city-search-result:hover,
+.city-search-result.is-active {
+  transform: translateX(2px);
+  border-color: var(--rule);
+  background: var(--button-hover);
+}
+
+.city-search-result strong {
+  font-size: 0.96rem;
+}
+
+.city-search-result span {
+  color: var(--pencil);
+  font-size: 0.86rem;
+}
+
+.city-search-status {
+  min-height: 1.3em;
+  margin: 0;
 }
 
 .field {
@@ -722,7 +878,7 @@ textarea:focus,
 select:focus {
   outline: 0;
   border-color: var(--ink);
-  box-shadow: inset 0 0 0 1px var(--ink), 0 0 0 3px rgba(25, 24, 23, 0.08);
+  box-shadow: inset 0 0 0 1px var(--ink), 0 0 0 3px var(--focus-ring);
 }
 
 .form-foot {
@@ -738,7 +894,7 @@ select:focus {
 
 .form-errors,
 .error {
-  color: var(--danger);
+  color: var(--danger-text);
 }
 
 .empty-state {
@@ -766,11 +922,11 @@ select:focus {
 }
 
 .message.success {
-  background: #f7f4ea;
+  background: var(--success-bg);
 }
 
 .message.error {
-  color: var(--danger);
+  color: var(--danger-text);
 }
 
 @media (max-width: 860px) {
@@ -900,5 +1056,10 @@ select:focus {
 
   .landing-main {
     background-size: 34px 34px, 34px 34px, auto, auto;
+  }
+
+  .theme-toggle {
+    right: 12px;
+    bottom: 12px;
   }
 }

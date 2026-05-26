@@ -7,6 +7,24 @@
 {% endif %}
 
 {% for field in form %}
+  {% if show_city_search and field.name == "latitude" %}
+    <div class="city-search" data-city-search data-endpoint="https://geocoding-api.open-meteo.com/v1/search">
+      <label for="city-search-input">Ciudad</label>
+      <div class="city-search-box">
+        <input
+          id="city-search-input"
+          type="search"
+          autocomplete="off"
+          placeholder="Buscar ciudad"
+          aria-describedby="city-search-status"
+          aria-controls="city-search-results"
+          aria-expanded="false"
+        >
+      </div>
+      <div id="city-search-results" class="city-search-results" role="listbox" hidden></div>
+      <p id="city-search-status" class="city-search-status muted" data-city-search-status aria-live="polite"></p>
+    </div>
+  {% endif %}
   <div class="field">
     <label for="{{ field.id_for_label }}">{{ field.label }}</label>
     {{ field }}

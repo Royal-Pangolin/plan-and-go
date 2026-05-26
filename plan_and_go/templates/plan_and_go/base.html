@@ -5,27 +5,44 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}Plan&Go{% endblock %}</title>
+  <script>
+    (function () {
+      try {
+        var savedTheme = localStorage.getItem("plan-go-theme");
+        var systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        document.documentElement.dataset.theme = savedTheme === "dark" || savedTheme === "light" ? savedTheme : systemTheme;
+      } catch (error) {
+        document.documentElement.dataset.theme = "light";
+      }
+    })();
+  </script>
   <link rel="stylesheet" href="{% static 'plan_and_go/css/styles.css' %}">
+  <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js" defer></script>
 </head>
 <body>
   {% block header %}
     <header class="topbar">
       <a class="brand" href="{% url 'plan_and_go:home' %}">Plan&Go</a>
-      <nav class="nav">
-        {% if user.is_authenticated %}
-          <a href="{% url 'plan_and_go:trip_list' %}">Mis viajes</a>
-          <a class="button small" href="{% url 'plan_and_go:trip_create' %}">Nuevo viaje</a>
-          <form action="{% url 'logout' %}" method="post" class="inline-form">
-            {% csrf_token %}
-            <button type="submit" class="link-button">Salir</button>
-          </form>
-        {% else %}
-          <a href="{% url 'login' %}">Iniciar sesión</a>
-          <a class="button small" href="{% url 'plan_and_go:register' %}">Crear cuenta</a>
-        {% endif %}
-      </nav>
+      {% block header_actions %}
+        <nav class="nav">
+          {% if user.is_authenticated %}
+            <form action="{% url 'logout' %}" method="post" class="inline-form">
+              {% csrf_token %}
+              <button type="submit" class="link-button">Cerrar sesión</button>
+            </form>
+          {% else %}
+            <a href="{% url 'login' %}">Iniciar sesión</a>
+            <a class="button small" href="{% url 'plan_and_go:register' %}">Crear cuenta</a>
+          {% endif %}
+        </nav>
+      {% endblock %}
     </header>
   {% endblock %}
+
+  <button class="theme-toggle" type="button" data-theme-toggle aria-label="Cambiar a modo oscuro" aria-pressed="false">
+    <i class="theme-toggle-icon theme-toggle-sun" data-lucide="sun" aria-hidden="true"></i>
+    <i class="theme-toggle-icon theme-toggle-moon" data-lucide="moon" aria-hidden="true"></i>
+  </button>
 
   {% if messages %}
     <div class="messages" aria-live="polite">
@@ -38,5 +55,54 @@
   <main class="{% block main_class %}{% endblock %}">
     {% block content %}{% endblock %}
   </main>
+  <script>
+    (function () {
+      var storageKey = "plan-go-theme";
+      var toggle = document.querySelector("[data-theme-toggle]");
+
+      function getTheme() {
+        return document.documentElement.dataset.theme === "dark" ? "dark" : "light";
+      }
+
+      function updateToggle(theme) {
+        if (!toggle) {
+          return;
+        }
+        var isDark = theme === "dark";
+        toggle.setAttribute("aria-pressed", String(isDark));
+        toggle.setAttribute("aria-label", isDark ? "Cambiar a modo claro" : "Cambiar a modo oscuro");
+      }
+
+      function setTheme(theme, shouldSave) {
+        document.documentElement.dataset.theme = theme;
+        updateToggle(theme);
+        if (shouldSave) {
+          try {
+            localStorage.setItem(storageKey, theme);
+          } catch (error) {
+            return;
+          }
+        }
+      }
+
+      updateToggle(getTheme());
+
+      if (toggle) {
+        toggle.addEventListener("click", function () {
+          setTheme(getTheme() === "dark" ? "light" : "dark", true);
+        });
+      }
+
+      if (window.lucide) {
+        window.lucide.createIcons();
+      } else {
+        window.addEventListener("DOMContentLoaded", function () {
+          if (window.lucide) {
+            window.lucide.createIcons();
+          }
+        });
+      }
+    })();
+  </script>
 </body>
 </html>

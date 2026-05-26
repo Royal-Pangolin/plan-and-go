@@ -6,7 +6,23 @@ from django.db.models import Q
 from .models import Expense, Stop, Trip
 
 
-DATE_INPUT = forms.DateInput(attrs={"type": "date"})
+SPANISH_DATE_FORMAT = "%d/%m/%Y"
+DATE_INPUT_FORMATS = [SPANISH_DATE_FORMAT, "%Y-%m-%d"]
+DATE_INPUT = forms.DateInput(
+    format=SPANISH_DATE_FORMAT,
+    attrs={
+        "autocomplete": "off",
+        "inputmode": "numeric",
+        "pattern": r"\d{2}/\d{2}/\d{4}",
+        "placeholder": "dd/mm/aaaa",
+    },
+)
+
+
+def configure_date_fields(form, field_names):
+    for field_name in field_names:
+        if field_name in form.fields:
+            form.fields[field_name].input_formats = DATE_INPUT_FORMATS
 
 
 class RegistrationForm(UserCreationForm):
@@ -39,6 +55,10 @@ class TripForm(forms.ModelForm):
             "end_date": DATE_INPUT,
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        configure_date_fields(self, ("start_date", "end_date"))
+
 
 class StopForm(forms.ModelForm):
     class Meta:
@@ -58,6 +78,10 @@ class StopForm(forms.ModelForm):
             "end_date": DATE_INPUT,
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        configure_date_fields(self, ("start_date", "end_date"))
+
 
 class ExpenseForm(forms.ModelForm):
     class Meta:
@@ -70,6 +94,7 @@ class ExpenseForm(forms.ModelForm):
     def __init__(self, *args, stop, **kwargs):
         super().__init__(*args, **kwargs)
         self.stop = stop
+        configure_date_fields(self, ("date",))
         self.fields["paid_by"].queryset = stop.trip.travelers.order_by("username")
         self.fields["paid_by"].label_from_instance = lambda user: user.get_username()
 

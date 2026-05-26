@@ -1,4 +1,5 @@
 from collections import defaultdict
+from datetime import date as date_type
 from decimal import Decimal, ROUND_HALF_UP
 
 import requests
@@ -32,6 +33,30 @@ WEATHER_LABELS = {
     99: "Tormenta fuerte con granizo",
 }
 
+WEATHER_ICONS = {
+    0: "☀️",
+    1: "🌤️",
+    2: "⛅",
+    3: "☁️",
+    45: "🌫️",
+    48: "🌫️",
+    51: "🌦️",
+    53: "🌦️",
+    55: "🌦️",
+    61: "🌧️",
+    63: "🌧️",
+    65: "🌧️",
+    71: "❄️",
+    73: "❄️",
+    75: "❄️",
+    80: "🌦️",
+    81: "🌦️",
+    82: "🌧️",
+    95: "⛈️",
+    96: "⛈️",
+    99: "⛈️",
+}
+
 
 def money(value):
     return Decimal(value).quantize(MONEY, rounding=ROUND_HALF_UP)
@@ -61,6 +86,8 @@ def get_weather_forecast(stop):
         days.append(
             {
                 "date": date,
+                "display_date": _format_api_date(date),
+                "icon": WEATHER_ICONS.get(code, "🌡️"),
                 "label": WEATHER_LABELS.get(code, "Previsión disponible"),
                 "temperature_max": _value_at(daily.get("temperature_2m_max"), index),
                 "temperature_min": _value_at(daily.get("temperature_2m_min"), index),
@@ -186,3 +213,10 @@ def _value_at(values, index):
     if not values or index >= len(values):
         return None
     return values[index]
+
+
+def _format_api_date(value):
+    try:
+        return date_type.fromisoformat(value).strftime("%d/%m/%Y")
+    except (TypeError, ValueError):
+        return value

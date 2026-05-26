@@ -18,7 +18,7 @@
   <section class="list-grid sheet-section">
     {% for trip in trips %}
       <article class="trip-row">
-        <a href="{{ trip.get_absolute_url }}">
+        <a class="trip-link" href="{{ trip.get_absolute_url }}">
           <span class="row-title">{{ trip.name }}</span>
           <span class="row-meta">{{ trip.start_date|date:"d/m/Y" }} - {{ trip.end_date|date:"d/m/Y" }}</span>
         </a>

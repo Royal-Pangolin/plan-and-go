@@ -7,7 +7,7 @@
   <div>
     <p class="eyebrow"><a href="{{ trip.get_absolute_url }}">{{ trip.name }}</a></p>
     <h1>{{ stop.name }}</h1>
-    <p class="muted">{{ stop.start_date|date:"d/m/Y" }} - {{ stop.end_date|date:"d/m/Y" }} · {{ stop.latitude }}, {{ stop.longitude }}</p>
+    <p class="muted">{{ stop.start_date|date:"d/m/Y" }} - {{ stop.end_date|date:"d/m/Y" }}</p>
   </div>
   <div class="actions head-actions">
     <a class="button" href="{% url 'plan_and_go:expense_create' trip.pk stop.pk %}">Nuevo gasto</a>
@@ -30,10 +30,6 @@
   <div>
     <span>Gastos</span>
     <strong>{{ expenses|length }}</strong>
-  </div>
-  <div>
-    <span>Previsión</span>
-    <strong>{% if weather %}activa{% else %}sin datos{% endif %}</strong>
   </div>
 </section>
 
@@ -83,13 +79,12 @@
     <section class="panel">
       <h2>Previsión</h2>
       {% if weather %}
-        <p class="muted">Zona horaria: {{ weather.timezone|default:"auto" }}</p>
         <div class="weather-list">
           {% for day in weather.days %}
             <div class="weather-row">
-              <span>{{ day.date }}</span>
-              <strong>{{ day.label }}</strong>
-              <small>{{ day.temperature_min }} / {{ day.temperature_max }} C · {{ day.precipitation }} mm</small>
+              <span>{{ day.display_date }}</span>
+              <strong><span aria-hidden="true">{{ day.icon }}</span> {{ day.label }}</strong>
+              <small>{{ day.temperature_min }} / {{ day.temperature_max }} °C · {{ day.precipitation }} mm</small>
             </div>
           {% endfor %}
         </div>

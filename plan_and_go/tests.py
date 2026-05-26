@@ -10,6 +10,7 @@ from django.db import IntegrityError
 from django.test import TestCase, override_settings
 from django.urls import reverse
 
+from .forms import ExpenseForm, StopForm, TripForm
 from .models import Expense, Stop, Traveler, Trip
 from .services import get_trip_financial_summary, get_weather_forecast
 
@@ -143,6 +144,23 @@ class ViewPermissionTests(PlanAndGoTestCase):
         self.assertEqual(response.status_code, 302)
         self.assertTrue(Stop.objects.filter(trip=self.trip, name="Granada").exists())
 
+    def test_stop_form_includes_city_search(self):
+        self.client.force_login(self.mariam)
+
+        response = self.client.get(
+            reverse("plan_and_go:stop_create", kwargs={"trip_pk": self.trip.pk})
+        )
+
+        self.assertContains(response, 'data-city-search')
+        self.assertContains(response, 'https://geocoding-api.open-meteo.com/v1/search')
+        self.assertContains(response, 'id="id_latitude"')
+        self.assertContains(response, 'id="id_longitude"')
+        self.assertNotContains(response, 'data-city-search-button')
+        self.assertNotContains(response, 'Selecciona una ciudad para rellenar latitud y longitud.')
+        body = response.content.decode()
+        self.assertLess(body.index('data-city-search'), body.index('id="id_latitude"'))
+        self.assertLess(body.index('id="id_latitude"'), body.index('id="id_longitude"'))
+
     @override_settings(EMAIL_BACKEND="django.core.mail.backends.locmem.EmailBackend")
     def test_creator_can_invite_existing_user_and_email_is_sent(self):
         invited = User.objects.create_user(
@@ -161,6 +179,34 @@ class ViewPermissionTests(PlanAndGoTestCase):
         self.assertTrue(Traveler.objects.filter(trip=self.trip, user=invited).exists())
         self.assertEqual(len(mail.outbox), 1)
         self.assertIn(self.trip.name, mail.outbox[0].subject)
+
+
+class DateFormTests(PlanAndGoTestCase):
+    def test_date_fields_render_as_day_month_year(self):
+        expense = Expense(
+            stop=self.stop,
+            paid_by=self.alonso,
+            description="Hotel",
+            amount=Decimal("100.00"),
+            date=date(2026, 6, 1),
+        )
+
+        self.assertIn('value="01/06/2026"', TripForm(instance=self.trip).as_p())
+        self.assertIn('value="01/06/2026"', StopForm(instance=self.stop).as_p())
+        self.assertIn('value="01/06/2026"', ExpenseForm(instance=expense, stop=self.stop).as_p())
+
+    def test_date_fields_accept_day_month_year(self):
+        form = TripForm(
+            data={
+                "name": "Ruta con formato español",
+                "description": "",
+                "start_date": "03/06/2026",
+                "end_date": "04/06/2026",
+            }
+        )
+
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(form.cleaned_data["start_date"], date(2026, 6, 3))
 
 
 class WeatherServiceTests(PlanAndGoTestCase):
@@ -184,6 +230,8 @@ class WeatherServiceTests(PlanAndGoTestCase):
 
         self.assertEqual(forecast["timezone"], "Europe/Madrid")
         self.assertEqual(forecast["days"][0]["label"], "Despejado")
+        self.assertEqual(forecast["days"][0]["icon"], "☀️")
+        self.assertEqual(forecast["days"][0]["display_date"], "01/06/2026")
 
     @patch("plan_and_go.services.requests.get")
     def test_weather_service_returns_none_on_timeout(self, mocked_get):
